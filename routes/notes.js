@@ -1,19 +1,18 @@
 const notes = require("express").Router();
 const { json } = require("express");
-const { readFromFile, readAndAppend } = require("../helpers/fsUtils");
+const { readFromFile, writeToFile, readAndAppend } = require("../helpers/fsUtils");
 const uuid = require("../helpers/uuid");
-let { savedNotes } = require("../db/db.json");
 
 notes.get("/", (req, res) => {
   readFromFile("./db/db.json").then((data) => res.json(JSON.parse(data)));
 });
 
-notes.get("/:noteId", (req, res) => {
-  const noteId = req.params;
-  console.log(noteId);
+notes.get("/:title", (req, res) => {
+  const titleText = req.params.title;
+  console.log(titleText);
   readFromFile("./db/db.json").then((data) => {
     const notes = JSON.parse(data);
-    const selectedNote = notes.find((note) => note.noteId === noteId);
+    const selectedNote = notes.find((note) => note.id === titleText);
     return selectedNote.length > 0
       ? res.json(selectedNote)
       : res.json("No note with that ID");
@@ -22,26 +21,21 @@ notes.get("/:noteId", (req, res) => {
 
 
 
-notes.delete("/:noteId", (req, res) => {
-  const noteId = req.params;
-
+notes.delete("/:id", (req, res) => {
+  const noteId = req.params.id;
   console.log("req.params: ", noteId);
-  for (let key in noteId) {
-    console.log(key, ": ", noteId[key])}
-  readFromFile("./db/db.json").then((data) => {
-    const notes = JSON.parse(data);
-    // console.log("notes: ", notes);
-    const filteredNotes = notes.filter((note) => note.noteId !== noteId);
-    // console.log("Fnotes: ", filteredNotes);
-    return filteredNotes;
+  readFromFile("./db/db.json")
+  .then((data) => JSON.parse(data))
+  .then((json) => {
+    const notes = json.filter((note) => note.id !== noteId);
+    console.log("notes: ", notes);
+
+    writeToFile("./db/db.json", notes);
+
+    res.json('please work')
+  })
+ 
   });
-  //     .then((filteredNotes) => {
-  //       writeToFile("./db/db.json", JSON.stringify(filteredNotes))
-  //         .then(() => {
-  //           res.json(`Item ${noteId} has been deleted 🗑️`);
-  //         });
-  //     });
-});
 
 notes.post("/", (req, res) => {
   const { title, text } = req.body;
@@ -50,7 +44,7 @@ notes.post("/", (req, res) => {
     const newNote = {
       title,
       text,
-      noteId: uuid(),
+      id: uuid(),
     };
 
     readAndAppend(newNote, "./db/db.json");
@@ -65,27 +59,5 @@ notes.post("/", (req, res) => {
     res.json("Error in Posting Note");
   }
 });
-
-// function deleteNote(id, notesArray) {
-//   for (let i = 0; i < notesArray.length; i++) {
-//     let note = notesArray[i];
-
-//     if (note.id == id) {
-//       notesArray.splice(i, 1);
-//       fs.writeFileSync(
-//         path.join(__dirname, "./db/db.json"),
-//         JSON.stringify(notesArray, null, 2)
-//       );
-
-//       break;
-//     }
-//   }
-// }
-
-//   notes.delete('/:noteId', (req, res) => {
-//     console.log(req.params)
-//     deleteNote(req.params, savedNotes);
-//     res.json(true);
-//   });
 
 module.exports = notes;

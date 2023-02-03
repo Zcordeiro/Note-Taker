@@ -1,22 +1,17 @@
 [
-  {
-    "title": "Test title",
-    "text": "Test text",
-    "noteId": "5464"
-  },
-  {
-    "title": "Test Title",
-    "text": "Test text",
-    "noteId": "049e"
-  },
-  {
-    "title": "New Test",
-    "text": "test text ",
-    "noteId": "a1ba"
-  },
-  {
-    "title": "Add Note",
-    "text": "note text",
-    "noteId": "390f"
-  }
+    {
+        "title": "Test Title",
+        "text": "Test text",
+        "id": "056f"
+    },
+    {
+        "title": "Test Number 2",
+        "text": "Test text",
+        "id": "0a33"
+    },
+    {
+        "title": "This is a note",
+        "text": "this is another ",
+        "id": "09ca"
+    }
 ]
